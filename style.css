@@ -1,0 +1,209 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Jost", sans-serif;
+}
+
+body {
+    background: #000;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.container {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 30px;
+    width: 100%;
+    max-width: 420px;
+    height: fit-content;
+
+
+}
+
+.header h2 {
+    font-size: 2rem;
+    color: #fff;
+    letter-spacing: 4px;
+    text-align: center;
+    justify-content: center;
+}
+
+.header p {
+    color: #fff;
+    font-size: 13px;
+    margin-top: 7px;
+    margin-bottom: 24px;
+    text-align: center;
+    justify-content: center;
+}
+
+.Main label {
+    display: block;
+    font-size: 11px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+}
+
+.Main input,
+.Main select {
+    width: 100%;
+    padding: 10px 12px;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+    outline: none;
+    margin-bottom: 14px;
+}
+
+.button {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.Save {
+    flex: 1;
+    padding: 11px;
+    border: none;
+    background: #fff;
+    border-radius: 6px;
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.Save:hover {
+    color: #fff;
+    background: #222;
+    transition: 0.2s ease;
+}
+
+.Reset {
+    flex: 1;
+    padding: 11px;
+    border: none;
+    background: #fff;
+    border-radius: 6px;
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.Reset:hover {
+    color: #fff;
+    background: #222;
+    transition: 0.2s ease;
+}
+
+#workout-list {
+    margin-top: 24px;
+    border-top: 1px solid #222;
+    padding-top: 16px;
+}
+
+#workout-list div {
+    background: #000;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#workout-list button {
+    background: #ffffff;
+    border: 1px solid #444;
+    color: #000;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: 10px;
+    font-weight: 700;
+}
+
+
+#workout-list small {
+    color: #666;
+    font-size: 11px;
+    display: block;
+    margin-top: 3px;
+
+}
+
+
+
+/* TIMER SECTION */
+
+.timer-section {
+    margin-bottom: 14px;
+}
+
+.timer-display {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #fff;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.timer-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.timer-buttons button {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.timer-buttons button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.manual-duration {
+    margin-bottom: 14px;
+}
+
+.workout-info p {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.workout-info small {
+    color: #666;
+    font-size: 11px;
+    display: block;
+    margin-top: 3px;
+}
