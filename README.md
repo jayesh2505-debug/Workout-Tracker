@@ -3,19 +3,29 @@
 A workout tracking app built with vanilla JavaScript.
 
 ## Features
-- Log exercises with sets, reps, and weight
-- Live workout timer with 3 hour auto-stop
+- User authentication — signup and login
+- Cloud database via Firebase Firestore
+- Workouts tied to individual users
+- Live workout timer with 3 hour limit
 - Manual duration input
 - Date and time stamping
 - Delete individual workouts
-- Data persistence with localStorage
+- Reset all workouts
+- Logout functionality
+- Clean black and white UI
+- Deployed live on GitHub Pages
 
 
 ## Tech Stack
 - HTML
 - CSS
 - JavaScript
+- FireBase FireStore
+- FireBase Authentication
+
 
 ## Live Demo
-Coming soon
+The App is currently Live. User can SignUp and Track the Workouts :)
+
+https://jayesh2505-debug.github.io/Workout-Tracker/
 
