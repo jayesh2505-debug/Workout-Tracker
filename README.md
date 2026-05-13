@@ -13,7 +13,7 @@ A workout tracking app built with vanilla JavaScript.
 - Reset all workouts
 - Logout functionality
 - Clean black and white UI
-- Deployed live on GitHub Pages
+
 
 
 ## Tech Stack
