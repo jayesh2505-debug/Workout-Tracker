@@ -72,12 +72,250 @@
 
         </div>
 
+        <div class="logout-button">
+            <button id="logout-btn">Logout</button>
+        </div>
+
 
     </div>
 
 
 
-    <script src="script.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAVj6g4iJUSZvhV_AgtVyJ0BG6FDum78rY",
+            authDomain: "tracky-58c7d.firebaseapp.com",
+            projectId: "tracky-58c7d",
+            storageBucket: "tracky-58c7d.firebasestorage.app",
+            messagingSenderId: "786070213359",
+            appId: "1:786070213359:web:b7d5f25d1320abd725c11a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+
+        // AUTH UI
+        document.body.insertAdjacentHTML('afterbegin', `
+<div id="auth-container">
+    <div id="auth-box">
+        <h2>TRACKY</h2>
+        <input type="email" id="auth-email" placeholder="Email">
+        <input type="password" id="auth-password" placeholder="Password">
+        <button id="login-btn">Login</button>
+        <button id="signup-btn">Sign Up</button>
+        <p id="auth-error"></p>
+    </div>
+</div>
+`);
+
+        // AUTH LOGIC
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                document.getElementById('auth-error').textContent = err.message;
+            }
+        });
+
+        document.getElementById('signup-btn').addEventListener('click', async () => {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                document.getElementById('auth-error').textContent = err.message;
+            }
+        });
+
+        // AUTH STATE
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.container').style.display = 'block';
+                loadWorkouts(user.uid);
+            } else {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.container').style.display = 'none';
+            }
+        });
+
+
+
+        const exerciseInput = document.getElementById('exercise-name');
+        const setsInput = document.getElementById('sets');
+        const repsInput = document.getElementById('reps');
+        const weightInput = document.getElementById('weight');
+        const unitInput = document.getElementById('unit');
+        const saveButton = document.querySelector('.Save');
+        const resetButton = document.querySelector('.Reset');
+        const workoutList = document.getElementById('workout-list');
+        const timerDisplay = document.getElementById('timer-display');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const resetTimerBtn = document.getElementById('reset-timer-btn');
+        const manualInput = document.getElementById('manual-input');
+
+        // TIMER
+        let timerInterval = null;
+        let seconds = 0;
+        let timerUsed = false;
+        const MAX_SECONDS = 10800;
+
+        function formatTime(secs) {
+            const h = Math.floor(secs / 3600);
+            const m = Math.floor((secs % 3600) / 60);
+            const s = secs % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            seconds = 0;
+            timerUsed = false;
+            timerDisplay.textContent = '00:00:00';
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            manualInput.disabled = false;
+            manualInput.value = '';
+        }
+
+        startBtn.addEventListener('click', function () {
+            if (timerInterval) return;
+            timerUsed = true;
+            manualInput.disabled = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            timerInterval = setInterval(function () {
+                seconds++;
+                timerDisplay.textContent = formatTime(seconds);
+                if (seconds >= MAX_SECONDS) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    stopBtn.disabled = true;
+                    alert('3 hour limit reached. Your timer has been paused automatically.');
+                }
+            }, 1000);
+        });
+
+        stopBtn.addEventListener('click', function () {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            stopBtn.disabled = true;
+            startBtn.disabled = false;
+        });
+
+        resetTimerBtn.addEventListener('click', function () {
+            resetTimer();
+        });
+
+        // DISPLAY WORKOUTS
+        function displayWorkouts(workouts) {
+            workoutList.innerHTML = '';
+            workouts.forEach(function (workout) {
+                const div = document.createElement('div');
+                div.innerHTML = `
+            <div class="workout-info">
+                <p>${workout.exercise} - ${workout.sets} sets x ${workout.reps} reps x ${workout.weight} ${workout.unit}</p>
+                <small>${workout.date} at ${workout.time}</small>
+                <small>Duration: ${workout.duration}</small>
+            </div>
+            <button onclick="deleteWorkout('${workout.id}')">Delete</button>
+        `;
+                workoutList.appendChild(div);
+            });
+        }
+
+
+        //LOAD WORKOUT FROMM FIREBASE
+
+        async function loadWorkouts(uid) {
+
+            const q = query(collection(db, 'workouts'), where('uid', '==', uid));
+            const snapshot = await getDocs(q);
+            const workouts = [];
+            snapshot.forEach(doc => {
+                workouts.push({ id: doc.id, ...doc.data() });
+            });
+
+            displayWorkouts(workouts);
+        }
+
+        // SAVE WORKOUT TO FIREBASE
+
+        saveButton.addEventListener('click', async function () {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const exercise = exerciseInput.value;
+            const sets = setsInput.value;
+            const reps = repsInput.value;
+            const weight = weightInput.value;
+            const unit = unitInput.value;
+
+            if (exercise === '' || sets === '' || reps === '' || weight === '') {
+                alert('Please Fill In All Fields');
+                return
+            }
+
+            const duration = timerUsed
+                ? formatTime(seconds)
+                : manualInput.value
+                    ? `${manualInput.value} mins`
+                    : 'Not Recorded';
+
+            const workout = {
+                uid: user.uid,
+                exercise, sets, reps, weight, unit,
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                duration
+            };
+
+            await addDoc(collection(db, 'workouts'), workout);
+
+            exerciseInput.value = '';
+            setsInput.value = '';
+            repsInput.value = '';
+            weightInput.value = '';
+            resetTimer();
+
+            loadWorkouts(user.uid);
+        });
+
+
+        // DELETE WORKOUT FROM FIREBASE 
+        window.deleteWorkout = async function (id) {
+            await deleteDoc(doc(db, 'workouts', id));
+            loadWorkouts(auth.currentUser.uid);
+        };
+
+        // RESET ALL WORKOUTS
+        resetButton.addEventListener('click', async function () {
+            const user = auth.currentUser;
+            if (!user) return;
+            const q = query(collection(db, 'workouts'), where('uid', '==', user.uid));
+            const snapshot = await getDocs(q);
+            snapshot.forEach(async (d) => {
+                await deleteDoc(doc(db, 'workouts', d.id));
+            });
+            workoutList.innerHTML = '';
+        })
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth);
+        })
+
+
+    </script>
 </body>
 
 </html>
